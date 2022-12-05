@@ -6,8 +6,8 @@ import { ref, watchEffect } from 'vue'
 import EventDisplay from './components/EventDisplay.vue';
 
 
-const API_URL = "http://localhost:3000/";
-const SUFFIX = "events/"
+const API_URL = "/";
+const SUFFIX = "api/"
 const CALENDAR_ID = "3jsdb01svicc75chgu5l337itc@group.calendar.google.com";
 
 async function getEvents(calendar_id) {
