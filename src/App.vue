@@ -4,6 +4,7 @@
 import HelloWorld from './components/EventDisplay.vue'
 import { ref, watchEffect } from 'vue'
 import EventDisplay from './components/EventDisplay.vue';
+import LoadingSpinner from './components/LoadingSpinner.vue';
 
 
 const API_URL = "/";
@@ -30,21 +31,14 @@ getEvents(CALENDAR_ID).then(events => {
       <h1 v-if="data.length != 0">Yes, Julien is working today :</h1><h1 v-else>Julien is off today</h1>
         <EventDisplay v-for="event in data" :event="event"></EventDisplay>
     </ul>
+    <LoadingSpinner v-else></LoadingSpinner>
   </div>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2.0rem;
+  }
 }
 </style>

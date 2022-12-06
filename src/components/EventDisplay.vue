@@ -27,4 +27,13 @@ defineProps({
 .read-the-docs {
   color: #888;
 }
+@media (max-width: 600px) {
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3{
+    font-size: 1rem;
+  }
+}
 </style>
