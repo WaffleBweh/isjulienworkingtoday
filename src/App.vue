@@ -26,19 +26,39 @@ getEvents(CALENDAR_ID).then(events => {
 </script>
 
 <template>
-  <div>
-    <ul v-if="data != null">
-      <h1 v-if="data.length != 0">Yes, Julien is working today :</h1><h1 v-else>Julien is off today</h1>
+  <div class="container">
+    <div class="content">
+      <ul v-if="data != null">
+        <h1 v-if="data.length != 0">Yes, Julien is working today :</h1>
+        <h1 v-else>Julien is off today</h1>
         <EventDisplay v-for="event in data" :event="event"></EventDisplay>
-    </ul>
-    <LoadingSpinner v-else></LoadingSpinner>
+      </ul>
+      <LoadingSpinner v-else></LoadingSpinner>
+    </div>
   </div>
 </template>
 
 <style scoped>
-@media (max-width: 600px) {
-  h1 {
-    font-size: 2.0rem;
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-}
+
+  .content {
+    max-width: 80rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+  }
+
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 1.0rem;
+    }
+  }
 </style>
