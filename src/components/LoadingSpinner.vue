@@ -6,8 +6,8 @@
 /* nicely borrowed from https://codepen.io/mandelid/pen/kNBYLJ */
 #loading {
   display: inline-block;
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   border: 3px solid rgba(255,255,255,.3);
   border-radius: 50%;
   border-top-color: #fff;
