@@ -1,64 +1,102 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/EventDisplay.vue'
-import { ref, watchEffect } from 'vue'
-import EventDisplay from './components/EventDisplay.vue';
-import LoadingSpinner from './components/LoadingSpinner.vue';
+import { useUrlSearchParams } from "@vueuse/core"
+import { computed, ref, watch } from "vue"
+import EventDisplay from "./components/EventDisplay.vue"
+import LoadingSpinner from "./components/LoadingSpinner.vue"
 
-
-const API_URL = "/";
+const API_URL = "/"
 const SUFFIX = "api/"
-const CALENDAR_ID = "3jsdb01svicc75chgu5l337itc@group.calendar.google.com";
+const CALENDAR_ID = "3jsdb01svicc75chgu5l337itc@group.calendar.google.com"
 
-async function getEvents(calendar_id) {
-  const response = await fetch(API_URL + SUFFIX + calendar_id);
-  return await response.json();
+async function getEvents(calendarId, tomorrow = false) {
+	const URL = `${API_URL}${SUFFIX}${calendarId}?tomorrow=${tomorrow}`
+	const response = await fetch(URL)
+	return await response.json()
 }
 
+const params = useUrlSearchParams("history")
+const tomorrow = computed(() => params.tomorrow === "true")
+const dayLabel = computed(() => (tomorrow.value ? "tomorrow" : "today"))
+const otherDayLabel = computed(() => (tomorrow.value ? "today" : "tomorrow"))
+
+function toggleDay() {
+	params.tomorrow = params.tomorrow === "true" ? "false" : "true"
+}
+
+const loading = ref(false)
+const error = ref(false)
 const data = ref(null)
 
-getEvents(CALENDAR_ID).then(events => {
-  data.value = events;
-  console.log(data.value)
-});
+async function fetchEvents() {
+	loading.value = true
+	error.value = false
 
+	try {
+		data.value = await getEvents(CALENDAR_ID, tomorrow.value)
+	} catch {
+		error.value = true
+	} finally {
+		loading.value = false
+	}
+}
+
+watch(tomorrow, fetchEvents, { immediate: true })
 </script>
 
 <template>
-  <div class="container">
-    <div class="content">
-      <ul v-if="data != null">
-        <h1 v-if="data.length != 0">Yes, Julien is working today :</h1>
-        <h1 v-else>Julien is off today</h1>
-        <EventDisplay v-for="event in data" :event="event"></EventDisplay>
-      </ul>
-      <LoadingSpinner v-else></LoadingSpinner>
-    </div>
-  </div>
+	<div class="container">
+		<div class="content">
+			<LoadingSpinner v-if="loading" />
+			<div v-else-if="error">
+				<h1>Something went wrong 😱</h1>
+				<button
+					@click="fetchEvents"
+					class="try-again-button"
+				>
+					Try again
+				</button>
+			</div>
+			<div v-else-if="data">
+				<h1 v-if="data.length !== 0">Yes, Julien is working {{ dayLabel }}:</h1>
+				<h1 v-else>Julien is off {{ dayLabel }}</h1>
+				<EventDisplay
+					v-for="(event, i) in data"
+					:key="i"
+					:event="event"
+				/>
+				<button @click="toggleDay">What about {{ otherDayLabel }}?</button>
+			</div>
+		</div>
+	</div>
 </template>
 
 <style scoped>
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 
-  .content {
-    max-width: 80rem;
-    padding: 1rem;
-    text-align: center;
-  }
+.content {
+	max-width: 80rem;
+	text-align: center;
+	display: flex;
+	flex-direction: col;
+	align-items: center;
+}
 
-  h1 {
-    font-size: 2rem;
-    margin: 0.5rem 0;
-  }
+h1 {
+	font-size: 2rem;
+	margin: 0.5rem 0;
+}
 
-  @media (max-width: 600px) {
-    h1 {
-      font-size: 1.0rem;
-    }
-  }
+.try-again-button {
+	margin-top: 1rem;
+}
+
+/* @media (max-width: 600px) {
+	h1 {
+		font-size: 1rem;
+	}
+} */
 </style>
